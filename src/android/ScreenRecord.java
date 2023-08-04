@@ -298,7 +298,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
 
 
       if (isHideWhenRecord) {
-          cordova.getActivity().moveTaskToBack(true);
+          //cordova.getActivity().moveTaskToBack(true);
        }
 
              
