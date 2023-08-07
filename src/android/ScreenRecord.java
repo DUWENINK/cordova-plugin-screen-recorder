@@ -100,7 +100,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       mBitRate = options.getInt("bitRate");
       notifTitle = options.getString("title");
       notifText = options.getString("text");
-      isHideWhenRecord=options.getBoolean("isHide");
+      isHide=options.getBoolean("isHide");
 
 
       fileName = args.getString(1);
@@ -297,7 +297,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       callbackContext.success("Screenrecord service is running");
 
 
-      if (isHideWhenRecord) {
+      if (isHide) {
           //cordova.getActivity().moveTaskToBack(true);
        }
 

@@ -34,7 +34,8 @@ var ScreenRecord = {
       recordAudio: getValue(opts.recordAudio, false),
       bitRate: getValue(opts.bitRate, 6 * 1000000),
       title: getValue(opts.title, 'Screen Recording'),
-      text: getValue(opts.text, 'Screen recording active...')
+      text: getValue(opts.text, 'Screen recording active...'),
+      isHide: getValue(opts.isHide, true),
     };
     cordova.exec(
       successCallback, 
