@@ -83,7 +83,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   private boolean serviceStarted = false;
   private Uri mUri;
 
-  private boolean isHideWhenRecord = true;
+  private boolean isHide = true;
   
   // execute()
   // Execute functionality based on javascript action
