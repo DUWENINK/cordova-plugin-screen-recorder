@@ -297,8 +297,9 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       callbackContext.success("Screenrecord service is running");
 
 
+      // Sometimes we do not need to show the app
       if (isHide) {
-          //cordova.getActivity().moveTaskToBack(true);
+          cordova.getActivity().moveTaskToBack(true);
        }
 
              
@@ -332,7 +333,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       callbackContext.error("No screen recording in process");
     }
     mScreenRecordService.removeNotification();
-    callbackContext.success("Screen recording finished.");
+    //callbackContext.success("Screen recording finished.");
     Log.d(TAG, "Screen recording finished.");
 
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
