@@ -251,8 +251,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       // Set MediaRecorder options
       try {
         if(recordAudio) {
-          mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+         // mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+         // mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         }
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -313,6 +313,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         callbackContext.error("No screen recording in process");
         return;
       }
+    } else {
+      return;
     }
   }
   
