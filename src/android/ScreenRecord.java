@@ -256,9 +256,6 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         Log.d(TAG, "Output file: " + filePath);
       }
       
-
-
-
 // 创建一个MediaRecorder对象
 mMediaRecorder = new MediaRecorder();
 
