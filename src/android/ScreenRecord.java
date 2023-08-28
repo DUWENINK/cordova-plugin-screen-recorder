@@ -289,6 +289,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         mMediaRecorder.prepare();
       } catch(Exception e) {
         e.printStackTrace();
+
+        Log.d(TAG,"异常信息:",e);
       }
       
       // Create virtual display
@@ -353,6 +355,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       mMediaRecorder.stop();
       mMediaRecorder.reset();
       mMediaRecorder.release();
+      mMediaRecorder = null;
     } else {
       callbackContext.error("No screen recording in process");
     }
