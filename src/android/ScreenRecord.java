@@ -17,6 +17,7 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Binder;
 import android.os.IBinder;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -66,8 +67,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   private static final int FRAME_RATE = 60; // fps
   private final static int SCREEN_RECORD_CODE = 1000;
   private final static int WRITE_EXTERNAL_STORAGE_CODE = 1001;
-    private final static int MY_PERMISSIONS_REQUEST_RECORD_AUDIO  = 2511;
-
+  
   private CallbackContext callbackContext;
   private JSONObject options;
   private boolean recordAudio;
@@ -194,10 +194,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
     
     // Ask for write to external storage permission
     cordova.requestPermission(this, WRITE_EXTERNAL_STORAGE_CODE, 
-        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-      
-         cordova.requestPermission(this, MY_PERMISSIONS_REQUEST_RECORD_AUDIO, 
-      Manifest.permission.RECORD_AUDIO);
+      Manifest.permission.WRITE_EXTERNAL_STORAGE);
   
     // Ask for screen recording permission
     Intent captureIntent = mProjectionManager.createScreenCaptureIntent();
@@ -246,16 +243,14 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         Log.d(TAG, "Output file: " + filePath);
       }
       
-
-
       // Set MediaRecorder options
       try {
         if(recordAudio) {
-         // mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-         // mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+          mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         }
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           mMediaRecorder.setOutputFile(context.getContentResolver()
             .openFileDescriptor(mUri, "rw")
@@ -264,7 +259,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
           mMediaRecorder.setOutputFile(filePath);
         }
         mMediaRecorder.setVideoSize(mWidth, mHeight);
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
         mMediaRecorder.prepare();
@@ -313,8 +308,6 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         callbackContext.error("No screen recording in process");
         return;
       }
-    } else {
-      return;
     }
   }
   
