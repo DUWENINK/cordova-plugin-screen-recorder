@@ -258,24 +258,25 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       
 
 
-      // Set MediaRecorder options
-      try {
-        if(recordAudio) {
-          mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-          //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-        
-        }
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        if (recordAudio) {
-        
-          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 
-        }
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+// 创建一个MediaRecorder对象
+mMediaRecorder = new MediaRecorder();
 
-         Log.d(TAG, "DUWENINK");
+// 设置音频和视频的输入源
+mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+// 设置音频和视频的格式
+mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+
+// 设置音频和视频的质量
+mMediaRecorder.setAudioSamplingRate(44100);
+mMediaRecorder.setAudioChannels(1);
+mMediaRecorder.setAudioEncodingBitRate(96000);
+mMediaRecorder.setVideoFrameRate(30);
+mMediaRecorder.setVideoSize(640, 480);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           mMediaRecorder.setOutputFile(context.getContentResolver()
             .openFileDescriptor(mUri, "rw")
@@ -283,15 +284,43 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         } else {
           mMediaRecorder.setOutputFile(filePath);
         }
-        mMediaRecorder.setVideoSize(mWidth, mHeight);
-        mMediaRecorder.setVideoEncodingBitRate(mBitRate);
-        mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
-        mMediaRecorder.prepare();
-      } catch(Exception e) {
-        e.printStackTrace();
 
-        Log.d(TAG,"异常信息:",e);
-      }
+
+      // Set MediaRecorder options
+      // try {
+      //   if(recordAudio) {
+      //     mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+      //     //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        
+      //   }
+      //   mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+      //   if (recordAudio) {
+        
+      //     mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+
+      //   }
+      //   mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+
+      //    Log.d(TAG, "DUWENINK");
+
+      //   mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+      //   if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      //     mMediaRecorder.setOutputFile(context.getContentResolver()
+      //       .openFileDescriptor(mUri, "rw")
+      //       .getFileDescriptor());
+      //   } else {
+      //     mMediaRecorder.setOutputFile(filePath);
+      //   }
+      //   mMediaRecorder.setVideoSize(mWidth, mHeight);
+      //   mMediaRecorder.setVideoEncodingBitRate(mBitRate);
+      //   mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
+      //   mMediaRecorder.prepare();
+      // } catch(Exception e) {
+      //   Log.d(TAG,"异常信息:",e);
+      // }
+      
+
+      mMediaRecorder.prepare();
       
       // Create virtual display
       mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
