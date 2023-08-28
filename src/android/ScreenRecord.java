@@ -67,7 +67,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   private static final int FRAME_RATE = 60; // fps
   private final static int SCREEN_RECORD_CODE = 1000;
   private final static int WRITE_EXTERNAL_STORAGE_CODE = 1001;
-  
+    private final static int MY_PERMISSIONS_REQUEST_RECORD_AUDIO  = 2511;
+
   private CallbackContext callbackContext;
   private JSONObject options;
   private boolean recordAudio;
@@ -243,6 +244,11 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         Log.d(TAG, "Output file: " + filePath);
       }
       
+      // 检查并请求录音权限
+if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+  ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+}
+
       // Set MediaRecorder options
       try {
         if(recordAudio) {
