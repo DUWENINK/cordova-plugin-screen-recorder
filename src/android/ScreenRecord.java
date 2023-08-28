@@ -210,24 +210,14 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   @Override
   public void onRequestPermissionResult(int requestCode, 
       String[] permissions, int[] grantResults) throws JSONException {
-    if (requestCode == WRITE_EXTERNAL_STORAGE_CODE) {
-      if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        Log.d(TAG, "Permission for external storage write granted.");
-      } 
-      // else {
-      //   Log.d(TAG, "Permission for external storage write denied.");
-      //   callbackContext.error("Permission for external storage write denied.");
-      // }
-    }
-    if(requestCode == MY_PERMISSIONS_REQUEST_RECORD_AUDIO) {
+    if(requestCode == WRITE_EXTERNAL_STORAGE_CODE) {
       if(grantResults.length == 1 && grantResults[0] == 
           PackageManager.PERMISSION_GRANTED) {
-        Log.d(TAG, "Permission for  record audio granted.");
-      } 
-      // else {
-      //   Log.d(TAG, "Permission for  record audio denied.");
-      //   callbackContext.error("Permission for  record audio denied.");
-      // }
+        Log.d(TAG, "Permission for external storage write granted.");
+      } else {
+        Log.d(TAG, "Permission for external storage write denied.");
+        callbackContext.error("Permission for external storage write denied.");
+      }
     }
   }
     
@@ -256,24 +246,16 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         Log.d(TAG, "Output file: " + filePath);
       }
       
-// 创建一个MediaRecorder对象
-mMediaRecorder = new MediaRecorder();
 
-// 设置音频和视频的输入源
-mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-// 设置音频和视频的格式
-mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-
-// 设置音频和视频的质量
-mMediaRecorder.setAudioSamplingRate(44100);
-mMediaRecorder.setAudioChannels(1);
-mMediaRecorder.setAudioEncodingBitRate(96000);
-mMediaRecorder.setVideoFrameRate(30);
-mMediaRecorder.setVideoSize(640, 480);
+      // Set MediaRecorder options
+      try {
+        if(recordAudio) {
+          mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        }
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           mMediaRecorder.setOutputFile(context.getContentResolver()
             .openFileDescriptor(mUri, "rw")
@@ -281,43 +263,14 @@ mMediaRecorder.setVideoSize(640, 480);
         } else {
           mMediaRecorder.setOutputFile(filePath);
         }
-
-
-      // Set MediaRecorder options
-      // try {
-      //   if(recordAudio) {
-      //     mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-      //     //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-        
-      //   }
-      //   mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-      //   if (recordAudio) {
-        
-      //     mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-
-      //   }
-      //   mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
-
-      //    Log.d(TAG, "DUWENINK");
-
-      //   mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-      //   if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      //     mMediaRecorder.setOutputFile(context.getContentResolver()
-      //       .openFileDescriptor(mUri, "rw")
-      //       .getFileDescriptor());
-      //   } else {
-      //     mMediaRecorder.setOutputFile(filePath);
-      //   }
-      //   mMediaRecorder.setVideoSize(mWidth, mHeight);
-      //   mMediaRecorder.setVideoEncodingBitRate(mBitRate);
-      //   mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
-      //   mMediaRecorder.prepare();
-      // } catch(Exception e) {
-      //   Log.d(TAG,"异常信息:",e);
-      // }
-      
-
-      mMediaRecorder.prepare();
+        mMediaRecorder.setVideoSize(mWidth, mHeight);
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+        mMediaRecorder.setVideoEncodingBitRate(mBitRate);
+        mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
+        mMediaRecorder.prepare();
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
       
       // Create virtual display
       mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
@@ -381,7 +334,6 @@ mMediaRecorder.setVideoSize(640, 480);
       mMediaRecorder.stop();
       mMediaRecorder.reset();
       mMediaRecorder.release();
-      mMediaRecorder = null;
     } else {
       callbackContext.error("No screen recording in process");
     }
