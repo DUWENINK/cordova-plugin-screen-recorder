@@ -17,8 +17,6 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Binder;
 import android.os.IBinder;
-import androidx.core.content.ContextCompat;
-import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -196,7 +194,10 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
     
     // Ask for write to external storage permission
     cordova.requestPermission(this, WRITE_EXTERNAL_STORAGE_CODE, 
-      Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+      
+         cordova.requestPermission(this, MY_PERMISSIONS_REQUEST_RECORD_AUDIO, 
+      Manifest.permission.RECORD_AUDIO);
   
     // Ask for screen recording permission
     Intent captureIntent = mProjectionManager.createScreenCaptureIntent();
@@ -245,10 +246,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         Log.d(TAG, "Output file: " + filePath);
       }
       
-      // 检查并请求录音权限
-if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-  ActivityCompat.requestPermissions(this, new String[]{permission}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-}
+
 
       // Set MediaRecorder options
       try {
