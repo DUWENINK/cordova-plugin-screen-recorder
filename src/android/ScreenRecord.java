@@ -261,10 +261,19 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         if(recordAudio) {
           mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
           //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        
         }
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        if (recordAudio) {
+        
+          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+
+        }
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+
+         Log.d(TAG, "DUWENINK");
+
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           mMediaRecorder.setOutputFile(context.getContentResolver()
             .openFileDescriptor(mUri, "rw")
@@ -273,7 +282,6 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
           mMediaRecorder.setOutputFile(filePath);
         }
         mMediaRecorder.setVideoSize(mWidth, mHeight);
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
         mMediaRecorder.prepare();
