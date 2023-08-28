@@ -210,13 +210,21 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   @Override
   public void onRequestPermissionResult(int requestCode, 
       String[] permissions, int[] grantResults) throws JSONException {
-    if(requestCode == WRITE_EXTERNAL_STORAGE_CODE) {
-      if(grantResults.length == 1 && grantResults[0] == 
-          PackageManager.PERMISSION_GRANTED) {
+    if (requestCode == WRITE_EXTERNAL_STORAGE_CODE) {
+      if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         Log.d(TAG, "Permission for external storage write granted.");
       } else {
         Log.d(TAG, "Permission for external storage write denied.");
         callbackContext.error("Permission for external storage write denied.");
+      }
+    }
+    if(requestCode == MY_PERMISSIONS_REQUEST_RECORD_AUDIO) {
+      if(grantResults.length == 1 && grantResults[0] == 
+          PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "Permission for  record audio granted.");
+      } else {
+        Log.d(TAG, "Permission for  record audio denied.");
+        callbackContext.error("Permission for  record audio denied.");
       }
     }
   }
@@ -252,7 +260,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       try {
         if(recordAudio) {
           mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+          //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
           mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         }
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
