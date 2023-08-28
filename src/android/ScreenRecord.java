@@ -245,8 +245,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       }
       
       // 检查并请求录音权限
-if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-  ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+  ActivityCompat.requestPermissions(this, new String[]{permission}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
 }
 
       // Set MediaRecorder options
