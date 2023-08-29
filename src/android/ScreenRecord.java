@@ -249,7 +249,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
           //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
           //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         }
-         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+         //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
         // mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
