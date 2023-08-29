@@ -245,12 +245,12 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       
       // Set MediaRecorder options
       try {
-        if (recordAudio) {
-          mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-        }
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        // if (recordAudio) {
+        //   //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        //   //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        // }
+        //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -267,12 +267,13 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         mMediaRecorder.prepare();
       } catch(Exception e) {
         e.printStackTrace();
+       Log.d(TAG, "Output file: ",e);
+
       }
       
       // Create virtual display
       mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
-      mMediaProjection.createVirtualDisplay("MainActivity",
-        mWidth, mHeight, mScreenDensity,
+      mMediaProjection.createVirtualDisplay("MainActivity",mWidth, mHeight, mScreenDensity,
         DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
         mMediaRecorder.getSurface(), null, null);
         
