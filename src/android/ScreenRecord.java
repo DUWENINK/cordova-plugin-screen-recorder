@@ -226,28 +226,28 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
     if(requestCode == SCREEN_RECORD_CODE) {
       context = cordova.getActivity().getApplicationContext();
       
-      File cacheDir = context.getCacheDir();
-      File videoFile = new File(cacheDir, fileName);
-      filePath = videoFile.getAbsolutePath();
+      // File cacheDir = context.getCacheDir();
+      // File videoFile = new File(cacheDir, fileName);
+      // filePath = videoFile.getAbsolutePath();
 
 
       //----------------不放在相册里
       // // Create output file path
-      // if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      //   ContentValues contentValues = new ContentValues();
-      //   contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + "PR-DC");
-      //   contentValues.put(MediaStore.Video.Media.IS_PENDING, true);
-      //   contentValues.put(MediaStore.Video.Media.TITLE, fileName);
-      //   contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-      //   contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
-      //   mUri = context.getContentResolver()
-      //     .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
-      //   Log.d(TAG, "Output file: " + mUri.toString());
-      // } else {
-      //   File file = new File(context.getExternalFilesDir("PR-DC"), fileName);
-      //   filePath = file.getAbsolutePath();
-      //   Log.d(TAG, "Output file: " + filePath);
-      // }
+      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + "PR-DC");
+        contentValues.put(MediaStore.Video.Media.IS_PENDING, true);
+        contentValues.put(MediaStore.Video.Media.TITLE, fileName);
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+        mUri = context.getContentResolver()
+          .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+        Log.d(TAG, "Output file: " + mUri.toString());
+      } else {
+        File file = new File(context.getExternalFilesDir("PR-DC"), fileName);
+        filePath = file.getAbsolutePath();
+        Log.d(TAG, "Output file: " + filePath);
+      }
       
 
 
@@ -268,15 +268,15 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
 
 
-        mMediaRecorder.setOutputFile(filePath);
+       // mMediaRecorder.setOutputFile(filePath);
 
-        // if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        //   mMediaRecorder.setOutputFile(context.getContentResolver()
-        //     .openFileDescriptor(mUri, "rw")
-        //     .getFileDescriptor());
-        // } else {
-        //   mMediaRecorder.setOutputFile(filePath);
-        // }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          mMediaRecorder.setOutputFile(context.getContentResolver()
+            .openFileDescriptor(mUri, "rw")
+            .getFileDescriptor());
+        } else {
+          mMediaRecorder.setOutputFile(filePath);
+        }
         mMediaRecorder.setVideoSize(mWidth, mHeight);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
@@ -356,27 +356,27 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
     Log.d(TAG, "Screen recording finished.");
 
 
-  File cacheDir = context.getCacheDir();
-      File videoFile = new File(cacheDir, fileName);
-      filePath = videoFile.getAbsolutePath();
+  // File cacheDir = context.getCacheDir();
+  //     File videoFile = new File(cacheDir, fileName);
+  //     filePath = videoFile.getAbsolutePath();
 
 
-    // if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-    //   // Update video in gallery
-    //   ContentValues contentValues = new ContentValues();
-    //   contentValues.put(MediaStore.Video.Media.IS_PENDING, false);
-    //   context.getContentResolver().update(mUri, contentValues, null, null);
-    //   filePath = mUri.toString();
-    // } else {
-    //   // Add video to gallery
-    //   ContentValues contentValues = new ContentValues();
-    //   contentValues.put(MediaStore.Video.Media.TITLE, fileName);
-    //   contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-    //   contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
-    //   contentValues.put(MediaStore.Video.Media.DATA, filePath);
-    //   context.getContentResolver()
-    //       .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
-    // }
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      // Update video in gallery
+      ContentValues contentValues = new ContentValues();
+      contentValues.put(MediaStore.Video.Media.IS_PENDING, false);
+      context.getContentResolver().update(mUri, contentValues, null, null);
+      filePath = mUri.toString();
+    } else {
+      // Add video to gallery
+      ContentValues contentValues = new ContentValues();
+      contentValues.put(MediaStore.Video.Media.TITLE, fileName);
+      contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+      contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+      contentValues.put(MediaStore.Video.Media.DATA, filePath);
+      context.getContentResolver()
+          .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+    }
     
     // Log.e(TAG, "finished file" + filePath);
     // Log.e(TAG, "finished file name"+fileName);  
