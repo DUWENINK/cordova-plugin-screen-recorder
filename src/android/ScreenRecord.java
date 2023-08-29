@@ -358,10 +358,10 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
           .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
     }
     
-    Log.e(TAG, "finished file" + filePath);
-    Log.e(TAG, "finished file name"+fileName);
+    // Log.e(TAG, "finished file" + filePath);
+    // Log.e(TAG, "finished file name"+fileName);
 
-    callbackContext.success(filePath);
+    callbackContext.success(filePath+"/"+fileName);
     // Pass video file to media scanner service 
     // (in order to be shown in file system)
     MediaScannerConnection.scanFile(
