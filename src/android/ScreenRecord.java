@@ -277,6 +277,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         } else {
           mMediaRecorder.setOutputFile(filePath);
         }
+        mediaRecorder.setOrientationHint(90);  // 设置视频方向为90度
         mMediaRecorder.setVideoSize(mWidth, mHeight);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
