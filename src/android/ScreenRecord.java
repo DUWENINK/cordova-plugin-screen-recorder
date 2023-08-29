@@ -267,13 +267,16 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          mMediaRecorder.setOutputFile(context.getContentResolver()
-            .openFileDescriptor(mUri, "rw")
-            .getFileDescriptor());
-        } else {
-          mMediaRecorder.setOutputFile(filePath);
-        }
+
+        mMediaRecorder.setOutputFile(filePath);
+
+        // if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        //   mMediaRecorder.setOutputFile(context.getContentResolver()
+        //     .openFileDescriptor(mUri, "rw")
+        //     .getFileDescriptor());
+        // } else {
+        //   mMediaRecorder.setOutputFile(filePath);
+        // }
         mMediaRecorder.setVideoSize(mWidth, mHeight);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
@@ -382,7 +385,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
     // Pass video file to media scanner service 
     // (in order to be shown in file system)
 
-    
+
     // MediaScannerConnection.scanFile(
     //   context,
     //   new String[]{filePath},
