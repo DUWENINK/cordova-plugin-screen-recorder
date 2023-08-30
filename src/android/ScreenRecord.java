@@ -264,8 +264,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
 
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 
 
        // mMediaRecorder.setOutputFile(filePath);
@@ -277,7 +277,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         } else {
           mMediaRecorder.setOutputFile(filePath);
         }
-        mediaRecorder.setOrientationHint(90);  // 设置视频方向为90度
+        //mediaRecorder.setOrientationHint(90);  // 设置视频方向为90度
         mMediaRecorder.setVideoSize(mWidth, mHeight);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
