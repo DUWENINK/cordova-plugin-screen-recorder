@@ -72,6 +72,39 @@ public class ScreenRecordService extends Service {
     }
 	}
 
+
+  public void showNewNotification(String title, String text, Context context, int notifkResId) {
+    // Create a notification channel
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        NotificationChannel channel = new NotificationChannel("channel01", "Screen Record Service",
+            NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    // Build the notification
+    Notification.Builder builder = new Notification.Builder(context, "channel01")
+        .setSmallIcon(notifkResId)
+        .setContentTitle(title)
+        .setContentText(text)
+        .setPriority(Notification.PRIORITY_HIGH);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        builder.addMetadata(android.app.constants.KEY_BACKGROUND_SERVICE, "true");
+    }
+
+    Notification notification = builder.build();
+    
+    // get the notification manager
+    NotificationManager notificationManager = 
+        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    
+    // notify the notification
+    notificationManager.notify(1, notification);
+}
+
+
+
   // showNotification()
   // Start foreground and show notification
   // --------------------
