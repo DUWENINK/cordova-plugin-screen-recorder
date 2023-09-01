@@ -223,6 +223,15 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   // --------------------
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+    if (requestCode == SCREEN_RECORD_CODE) {
+      if (resultCode != Activity.RESULT_OK) {
+
+        Log.d(TAG, "resultCode: " + resultCode);
+          // User denied screen sharing permission
+          return;
+      }
+    }
     if(requestCode == SCREEN_RECORD_CODE) {
       context = cordova.getActivity().getApplicationContext();
       
