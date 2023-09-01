@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.app.Constants;
 
 import android.os.Build;
 import android.os.Binder;
@@ -90,7 +91,7 @@ public class ScreenRecordService extends Service {
         .setPriority(Notification.PRIORITY_HIGH);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        builder.addMetadata(android.app.constants.KEY_BACKGROUND_SERVICE, "true");
+        builder.addMetadata(Constants.KEY_BACKGROUND_SERVICE, "true");
     }
 
     Notification notification = builder.build();
