@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import android.os.Build;
 import android.os.Binder;
@@ -67,48 +68,10 @@ public class ScreenRecordService extends Service {
         String channelName = "Screen Recording";
         NotificationChannel chan = new NotificationChannel(
           NOTIFICATION_CHANNEL_ID, channelName, 
-            NotificationManager.IMPORTANCE_DEFAULT);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-              chan.setAllowBubbles(true);
-              chan.setForegroundServiceType(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
-          }
+            NotificationManager.IMPORTANCE_HIGH);
         mNotificationManager.createNotificationChannel(chan);
     }
 	}
-
-
-  public void showNewNotification(String title, String text, Context context, int notifkResId) {
-    // Create a notification channel
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        NotificationChannel channel = new NotificationChannel("channel01", "Screen Record Service",
-            NotificationManager.IMPORTANCE_DEFAULT);
-        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-    }
-
-    // Build the notification
-    Notification.Builder builder = new Notification.Builder(context, "channel01")
-        .setSmallIcon(notifkResId)
-        .setContentTitle(title)
-        .setContentText(text)
-        .setPriority(Notification.PRIORITY_HIGH);
-
-    // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-    //     builder.addMetadata(Constants.KEY_BACKGROUND_SERVICE, "true");
-    // }
-
-    Notification notification = builder.build();
-    
-    // get the notification manager
-    NotificationManager notificationManager = 
-        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-    
-    // notify the notification
-    notificationManager.notify(1, notification);
-}
-
-
-
   // showNotification()
   // Start foreground and show notification
   // --------------------
@@ -125,9 +88,21 @@ public class ScreenRecordService extends Service {
       
       // Create Intent for notification
       Intent notificationIntent = new Intent(this, mainActivity);
-      pendingIntent = PendingIntent.getActivity(this, 0, 
-        notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+      
+      
         
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+          PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+         pendingIntent = PendingIntent.getActivity(this, 0, 
+        notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+              
+        }
+
+
+
       Builder notiBuilder;
       // Create notification
       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -143,11 +118,20 @@ public class ScreenRecordService extends Service {
         .setContentText(text)
         .setContentIntent(pendingIntent)
         .build();
-          
-      startForeground(NOTIFICATION, notification);
-    } catch (Exception e) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          startForeground(NOTIFICATION, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+        } else {
+          startForeground(NOTIFICATION, notification);
+              
+        }
+
+   
+       } catch (Exception e) {
+        Log.e(TAG, "Error showing notification", e);
       e.printStackTrace();
     }
+
   }
   
   // removeNotification()
