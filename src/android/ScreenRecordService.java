@@ -94,9 +94,9 @@ public class ScreenRecordService extends Service {
         .setContentText(text)
         .setPriority(Notification.PRIORITY_HIGH);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        builder.addMetadata(Constants.KEY_BACKGROUND_SERVICE, "true");
-    }
+    // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    //     builder.addMetadata(Constants.KEY_BACKGROUND_SERVICE, "true");
+    // }
 
     Notification notification = builder.build();
     
