@@ -224,6 +224,8 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+            Log.d(TAG, "resultCode: " + resultCode);
+
     if (requestCode == SCREEN_RECORD_CODE) {
       if (resultCode != Activity.RESULT_OK) {
 
