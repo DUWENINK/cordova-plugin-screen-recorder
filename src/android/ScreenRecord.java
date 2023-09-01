@@ -176,7 +176,7 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
     Resources activityRes = activity.getResources();
     int notifkResId = activityRes.getIdentifier("ic_notification", 
       "drawable", activity.getPackageName());
-    mScreenRecordService.showNewNotification(notifTitle, notifText,
+    mScreenRecordService.showNotification(notifTitle, notifText,
       activity.getApplicationContext(), notifkResId);
           
     // Get display metrics

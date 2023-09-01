@@ -68,7 +68,11 @@ public class ScreenRecordService extends Service {
         String channelName = "Screen Recording";
         NotificationChannel chan = new NotificationChannel(
           NOTIFICATION_CHANNEL_ID, channelName, 
-          NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager.IMPORTANCE_DEFAULT);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+              chan.setAllowBubbles(true);
+              chan.setForegroundServiceType(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+          }
         mNotificationManager.createNotificationChannel(chan);
     }
 	}
