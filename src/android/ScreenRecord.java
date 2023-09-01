@@ -36,6 +36,12 @@ import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.provider.MediaStore;
 
+
+import android.app.Notification;
+import android.app.Notification.Builder;
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
+
 import android.content.ContentValues;
 import android.content.ContentResolver;
 
@@ -139,10 +145,10 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   // Start foreground service
   // --------------------
   public void startForegroundService() {
-    Activity activity = cordova.getActivity();
-    Intent bindIntent = new Intent(activity, ScreenRecordService.class);
-    activity.getApplicationContext().bindService(bindIntent, this, 0);
-    activity.getApplicationContext().startService(bindIntent);
+     Activity activity = cordova.getActivity();
+     Intent bindIntent = new Intent(activity, ScreenRecordService.class);
+     activity.getApplicationContext().bindService(bindIntent, this, 0);
+     activity.getApplicationContext().startService(bindIntent);
   }
   
   // onServiceConnected()
@@ -228,14 +234,6 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
              Log.d(TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
                           Log.d(TAG, "Build.VERSION_CODES.Q: " + Build.VERSION_CODES.Q);
 
-    // if (requestCode == SCREEN_RECORD_CODE) {
-    //   if (resultCode != Activity.RESULT_OK) {
-
-    //     Log.d(TAG, "resultCode: " + resultCode);
-    //       // User denied screen sharing permission
-    //       return;
-    //   }
-    // }
     if(requestCode == SCREEN_RECORD_CODE) {
       context = cordova.getActivity().getApplicationContext();
       
@@ -303,7 +301,16 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       }
       
       // Create virtual display
+      try{
+
       mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
+
+      }  catch(Exception e) {
+        e.printStackTrace();
+       Log.d(TAG, "mMediaProjection: ",e);
+
+      }
+
       mMediaProjection.createVirtualDisplay("MainActivity",mWidth, mHeight, mScreenDensity,
         DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
         mMediaRecorder.getSurface(), null, null);
