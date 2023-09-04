@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-  
+
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Build;
@@ -35,7 +35,6 @@ import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.provider.MediaStore;
-
 
 import android.app.Notification;
 import android.app.Notification.Builder;
@@ -66,14 +65,14 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   private MediaProjection mMediaProjection;
   private VirtualDisplay mVirtualDisplay;
   private ScreenRecordService mScreenRecordService;
-  
+
   protected final static String permission = Manifest.permission.RECORD_AUDIO;
   private Context context;
-  
+
   private static final int FRAME_RATE = 60; // fps
   private final static int SCREEN_RECORD_CODE = 1000;
   private final static int WRITE_EXTERNAL_STORAGE_CODE = 1001;
-  
+
   private CallbackContext callbackContext;
   private JSONObject options;
   private boolean recordAudio;
@@ -90,132 +89,128 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   private Uri mUri;
 
   private boolean isHide = true;
-  
+
   // execute()
   // Execute functionality based on javascript action
   // --------------------
   @Override
-  public boolean execute(String action, JSONArray args, 
+  public boolean execute(String action, JSONArray args,
       CallbackContext callbackContext) throws JSONException {
     this.callbackContext = callbackContext;
     // Start recording
-    if(action.equals("startRecord")) {
+    if (action.equals("startRecord")) {
       options = args.getJSONObject(0);
       Log.d(TAG, options.toString());
       recordAudio = options.getBoolean("recordAudio");
       mBitRate = options.getInt("bitRate");
       notifTitle = options.getString("title");
       notifText = options.getString("text");
-      isHide=options.getBoolean("isHide");
-
+      isHide = options.getBoolean("isHide");
 
       fileName = args.getString(1);
       this.startRecord();
       return true;
     }
     // Stop recording
-    else if(action.equals("stopRecord")) {
+    else if (action.equals("stopRecord")) {
       this.stopRecord();
       return true;
     }
     return false;
   }
-  
+
   // startRecord()
   // Start screen recording
   // --------------------
   private void startRecord() {
     Log.d(TAG, "Start recording");
-    if(cordova != null) {
+    if (cordova != null) {
       try {
-        if(!serviceStarted) {
+        if (!serviceStarted) {
           startForegroundService();
         } else {
           callScreenRecord();
         }
-      } catch(IllegalArgumentException e) {
+      } catch (IllegalArgumentException e) {
         callbackContext.error("Illegal Argument Exception.");
         PluginResult r = new PluginResult(PluginResult.Status.ERROR);
         callbackContext.sendPluginResult(r);
       }
     }
   }
-  
+
   // startForegroundService()
   // Start foreground service
   // --------------------
   public void startForegroundService() {
-     Activity activity = cordova.getActivity();
-     Intent bindIntent = new Intent(activity, ScreenRecordService.class);
-     activity.getApplicationContext().bindService(bindIntent, this, 0);
-     activity.getApplicationContext().startService(bindIntent);
+    Activity activity = cordova.getActivity();
+    Intent bindIntent = new Intent(activity, ScreenRecordService.class);
+    activity.getApplicationContext().bindService(bindIntent, this, 0);
+    activity.getApplicationContext().startService(bindIntent);
   }
-  
+
   // onServiceConnected()
   // Start recording when service is connected
   // --------------------
   @Override
-  public void onServiceConnected(ComponentName name, IBinder service){
-      ScreenRecordService.LocalBinder binder = 
-        (ScreenRecordService.LocalBinder) service;
-      mScreenRecordService = binder.getService();
-      serviceStarted = true;
-      callScreenRecord();
+  public void onServiceConnected(ComponentName name, IBinder service) {
+    ScreenRecordService.LocalBinder binder = (ScreenRecordService.LocalBinder) service;
+    mScreenRecordService = binder.getService();
+    serviceStarted = true;
+    callScreenRecord();
   }
-  
+
   // onServiceDisconnected()
   // Service disconnected
   // --------------------
   @Override
   public void onServiceDisconnected(ComponentName name) {
-      Log.i(TAG, "Service disconnected");
-      serviceStarted = false;
+    Log.i(TAG, "Service disconnected");
+    serviceStarted = false;
   }
-    
+
   // callScreenRecord()
   // Configures screen recording, called from startRecord()
   // --------------------
   private void callScreenRecord() {
     Activity activity = cordova.getActivity();
-    
+
     // Create notification
     Resources activityRes = activity.getResources();
-    int notifkResId = activityRes.getIdentifier("ic_notification", 
-      "drawable", activity.getPackageName());
+    int notifkResId = activityRes.getIdentifier("ic_notification",
+        "drawable", activity.getPackageName());
     mScreenRecordService.showNotification(notifTitle, notifText,
-      activity.getApplicationContext(), notifkResId);
-          
+        activity.getApplicationContext(), notifkResId);
+
     // Get display metrics
     DisplayMetrics displayMetrics = new DisplayMetrics();
     activity.getWindowManager()
-      .getDefaultDisplay().getMetrics(displayMetrics);
+        .getDefaultDisplay().getMetrics(displayMetrics);
     mScreenDensity = displayMetrics.densityDpi;
     mWidth = displayMetrics.widthPixels;
     mHeight = displayMetrics.heightPixels;
-    
+
     // Create Media Recorder object
     mMediaRecorder = new MediaRecorder();
-    mProjectionManager = (MediaProjectionManager)
-      activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-    
+    mProjectionManager = (MediaProjectionManager) activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+
     // Ask for write to external storage permission
-    cordova.requestPermission(this, WRITE_EXTERNAL_STORAGE_CODE, 
-      Manifest.permission.WRITE_EXTERNAL_STORAGE);
-  
+    cordova.requestPermission(this, WRITE_EXTERNAL_STORAGE_CODE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
     // Ask for screen recording permission
     Intent captureIntent = mProjectionManager.createScreenCaptureIntent();
     cordova.startActivityForResult(this, captureIntent, SCREEN_RECORD_CODE);
   }
-  
+
   // onRequestPermissionsResult()
   // Real start of recording, called from callScreenRecord()
   // --------------------
   @Override
-  public void onRequestPermissionResult(int requestCode, 
+  public void onRequestPermissionResult(int requestCode,
       String[] permissions, int[] grantResults) throws JSONException {
-    if(requestCode == WRITE_EXTERNAL_STORAGE_CODE) {
-      if(grantResults.length == 1 && grantResults[0] == 
-          PackageManager.PERMISSION_GRANTED) {
+    if (requestCode == WRITE_EXTERNAL_STORAGE_CODE) {
+      if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         Log.d(TAG, "Permission for external storage write granted.");
       } else {
         Log.d(TAG, "Permission for external storage write denied.");
@@ -223,28 +218,27 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       }
     }
   }
-    
+
   // onActivityResult()
   // After permission for screen recording granted, called from callScreenRecord()
   // --------------------
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-            Log.d(TAG, "resultCode: " + resultCode);
-             Log.d(TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
-                          Log.d(TAG, "Build.VERSION_CODES.Q: " + Build.VERSION_CODES.Q);
+    Log.d(TAG, "resultCode: " + resultCode);
+    Log.d(TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
+    Log.d(TAG, "Build.VERSION_CODES.Q: " + Build.VERSION_CODES.Q);
 
-    if(requestCode == SCREEN_RECORD_CODE) {
+    if (requestCode == SCREEN_RECORD_CODE) {
       context = cordova.getActivity().getApplicationContext();
-      
+
       // File cacheDir = context.getCacheDir();
       // File videoFile = new File(cacheDir, fileName);
       // filePath = videoFile.getAbsolutePath();
 
-
-      //----------------不放在相册里
+      // ----------------不放在相册里
       // // Create output file path
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + "PR-DC");
         contentValues.put(MediaStore.Video.Media.IS_PENDING, true);
@@ -252,69 +246,62 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
         mUri = context.getContentResolver()
-          .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+            .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
         Log.d(TAG, "Output file: " + mUri.toString());
       } else {
         File file = new File(context.getExternalFilesDir("PR-DC"), fileName);
         filePath = file.getAbsolutePath();
         Log.d(TAG, "Output file: " + filePath);
       }
-      
-
-
-
-
 
       // Set MediaRecorder options
       try {
         if (recordAudio) {
-          //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-          //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+          mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+
         }
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        if (recordAudio) {
+          mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        }
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 
+        // mMediaRecorder.setOutputFile(filePath);
 
-       // mMediaRecorder.setOutputFile(filePath);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           mMediaRecorder.setOutputFile(context.getContentResolver()
-            .openFileDescriptor(mUri, "rw")
-            .getFileDescriptor());
+              .openFileDescriptor(mUri, "rw")
+              .getFileDescriptor());
         } else {
           mMediaRecorder.setOutputFile(filePath);
         }
-        //mediaRecorder.setOrientationHint(90);  // 设置视频方向为90度
         mMediaRecorder.setOrientationHint(270);
         mMediaRecorder.setVideoSize(mWidth, mHeight);
         mMediaRecorder.setVideoEncodingBitRate(mBitRate);
         mMediaRecorder.setVideoFrameRate(FRAME_RATE); // fps
         mMediaRecorder.prepare();
-      } catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
-       Log.d(TAG, "Output file: ",e);
+        Log.d(TAG, "Output file: ", e);
 
       }
-      
+
       // Create virtual display
-      try{
+      try {
 
-      mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
+        mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
 
-      }  catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
-       Log.d(TAG, "mMediaProjection: ",e);
+        Log.d(TAG, "mMediaProjection: ", e);
 
       }
 
-      mMediaProjection.createVirtualDisplay("MainActivity",mWidth, mHeight, mScreenDensity,
-        DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-        mMediaRecorder.getSurface(), null, null);
-        
+      mMediaProjection.createVirtualDisplay("MainActivity", mWidth, mHeight, mScreenDensity,
+          DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+          mMediaRecorder.getSurface(), null, null);
+
       // MediaRecorder onError callback
       mMediaRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
         @Override
@@ -323,48 +310,46 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
           Log.d(TAG, "onError: what = " + what + " extra = " + what);
         }
       });
-      
+
       // MediaRecorder onInfo callback
       mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
         @Override
         public void onInfo(MediaRecorder mr, int what, int extra) {
-         Log.i(TAG, "onInfo: what = " + what + " extra = " + what);
+          Log.i(TAG, "onInfo: what = " + what + " extra = " + what);
         }
       });
-        
+
       // Start recording
       mMediaRecorder.start();
       Log.d(TAG, "Screenrecord service is running");
       callbackContext.success("Screenrecord service is running");
 
-
       // Sometimes we do not need to show the app
       if (isHide) {
-          cordova.getActivity().moveTaskToBack(true);
-       }
+        cordova.getActivity().moveTaskToBack(true);
+      }
 
-             
-      if(mMediaProjection == null) {
+      if (mMediaProjection == null) {
         Log.e(TAG, "No screen recording in process");
         callbackContext.error("No screen recording in process");
         return;
       }
     }
   }
-  
+
   // stopRecord()
   // Stop screen recording
   // --------------------
   private void stopRecord() {
-    if(mVirtualDisplay != null) {
+    if (mVirtualDisplay != null) {
       mVirtualDisplay.release();
       mVirtualDisplay = null;
     }
-    if(mMediaProjection != null) {
+    if (mMediaProjection != null) {
       mMediaProjection.stop();
       mMediaProjection = null;
     }
-    if(mMediaRecorder != null) {
+    if (mMediaRecorder != null) {
       mMediaRecorder.setOnErrorListener(null);
       mMediaRecorder.setOnInfoListener(null);
       mMediaRecorder.stop();
@@ -374,16 +359,14 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       callbackContext.error("No screen recording in process");
     }
     mScreenRecordService.removeNotification();
-    //callbackContext.success("Screen recording finished.");
+    // callbackContext.success("Screen recording finished.");
     Log.d(TAG, "Screen recording finished.");
 
+    // File cacheDir = context.getCacheDir();
+    // File videoFile = new File(cacheDir, fileName);
+    // filePath = videoFile.getAbsolutePath();
 
-  // File cacheDir = context.getCacheDir();
-  //     File videoFile = new File(cacheDir, fileName);
-  //     filePath = videoFile.getAbsolutePath();
-
-
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       // Update video in gallery
       ContentValues contentValues = new ContentValues();
       contentValues.put(MediaStore.Video.Media.IS_PENDING, false);
@@ -399,19 +382,18 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
       context.getContentResolver()
           .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
     }
-    
+
     // Log.e(TAG, "finished file" + filePath);
-    // Log.e(TAG, "finished file name"+fileName);  
+    // Log.e(TAG, "finished file name"+fileName);
     callbackContext.success(filePath);
-    //callbackContext.success(filePath+"/"+fileName);
-    // Pass video file to media scanner service 
+    // callbackContext.success(filePath+"/"+fileName);
+    // Pass video file to media scanner service
     // (in order to be shown in file system)
 
-
     // MediaScannerConnection.scanFile(
-    //   context,
-    //   new String[]{filePath},
-    //   new String[]{"video/mp4"},
-    //   null);
+    // context,
+    // new String[]{filePath},
+    // new String[]{"video/mp4"},
+    // null);
   }
 }
