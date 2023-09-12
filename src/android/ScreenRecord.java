@@ -341,54 +341,54 @@ public class ScreenRecord extends CordovaPlugin implements ServiceConnection {
   // Stop screen recording
   // --------------------
   private void stopRecord() {
-    if (mVirtualDisplay != null) {
-      mVirtualDisplay.release();
-      mVirtualDisplay = null;
-    }
-    if (mMediaProjection != null) {
-      mMediaProjection.stop();
-      mMediaProjection = null;
-    }
-    if (mMediaRecorder != null) {
-      mMediaRecorder.setOnErrorListener(null);
-      mMediaRecorder.setOnInfoListener(null);
-      mMediaRecorder.stop();
-      mMediaRecorder.reset();
-      mMediaRecorder.release();
-    } else {
-      callbackContext.error("No screen recording in process");
-    }
-    mScreenRecordService.removeNotification();
-    // callbackContext.success("Screen recording finished.");
-    Log.d(TAG, "Screen recording finished.");
+    try {
+      if (mVirtualDisplay != null) {
+        mVirtualDisplay.release();
+        mVirtualDisplay = null;
+      }
+      if (mMediaProjection != null) {
+        mMediaProjection.stop();
+        mMediaProjection = null;
+      }
+      if (mMediaRecorder != null) {
+        mMediaRecorder.setOnErrorListener(null);
+        mMediaRecorder.setOnInfoListener(null);
+        mMediaRecorder.stop();
+        mMediaRecorder.reset();
+        mMediaRecorder.release();
+      } else {
+        callbackContext.error("No screen recording in process");
+      }
+      mScreenRecordService.removeNotification();
+      // callbackContext.success("Screen recording finished.");
+      Log.d(TAG, "Screen recording finished.");
 
-    // File cacheDir = context.getCacheDir();
-    // File videoFile = new File(cacheDir, fileName);
-    // filePath = videoFile.getAbsolutePath();
+      // File cacheDir = context.getCacheDir();
+      // File videoFile = new File(cacheDir, fileName);
+      // filePath = videoFile.getAbsolutePath();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      // Update video in gallery
-      ContentValues contentValues = new ContentValues();
-      contentValues.put(MediaStore.Video.Media.IS_PENDING, false);
-      context.getContentResolver().update(mUri, contentValues, null, null);
-      filePath = mUri.toString();
-    } else {
-      // Add video to gallery
-      ContentValues contentValues = new ContentValues();
-      contentValues.put(MediaStore.Video.Media.TITLE, fileName);
-      contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-      contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
-      contentValues.put(MediaStore.Video.Media.DATA, filePath);
-      context.getContentResolver()
-          .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        // Update video in gallery
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Video.Media.IS_PENDING, false);
+        context.getContentResolver().update(mUri, contentValues, null, null);
+        filePath = mUri.toString();
+      } else {
+        // Add video to gallery
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Video.Media.TITLE, fileName);
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+        contentValues.put(MediaStore.Video.Media.DATA, filePath);
+        context.getContentResolver()
+            .insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+      }
+
+      callbackContext.success(filePath);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Log.d(TAG, "stopRecord Error: ", e);
     }
-
-    // Log.e(TAG, "finished file" + filePath);
-    // Log.e(TAG, "finished file name"+fileName);
-    callbackContext.success(filePath);
-    // callbackContext.success(filePath+"/"+fileName);
-    // Pass video file to media scanner service
-    // (in order to be shown in file system)
 
     // MediaScannerConnection.scanFile(
     // context,
