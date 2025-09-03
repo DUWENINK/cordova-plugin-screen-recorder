@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(C:\\Users\\DUWENINK\\AndroidStudioProjects\\MyApplication/**)",
+      "Bash(dir:*)",
+      "Read(C:\\Users\\DUWENINK\\AndroidStudioProjects\\MyApplication/**)",
+      "Read(C:\\Users\\DUWENINK\\AndroidStudioProjects\\MyApplication\\app\\src\\main\\java\\com\\example\\myapplication/**)",
+      "Read(C:\\Users\\DUWENINK\\AndroidStudioProjects\\MyApplication\\app\\src\\main\\java\\com\\example\\myapplication/**)",
+      "Read(C:\\Users\\DUWENINK\\AndroidStudioProjects\\MyApplication\\app\\src\\main\\java\\com\\example\\myapplication/**)",
+      "WebFetch(domain:developer.android.google.cn)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
